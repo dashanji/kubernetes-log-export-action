@@ -21,6 +21,7 @@ runs:
     with:
       node-version: '16.x'
   - name: check files
+    shell: bash
     run: |
       pwd
       ls -la
