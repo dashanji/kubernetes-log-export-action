@@ -20,18 +20,13 @@ runs:
     uses: actions/setup-node@v2
     with:
       node-version: '16.x'
-  - name: check files
+  - name: cd into directory and set file permissions
     shell: bash
     run: |
-      pwd
-      ls -la
-  - name: tmate session
-    uses: mxschmitt/action-tmate@v3
-  - name: Set file permissions
-    shell: bash
-    run: |
+      pushd $GITHUB_ACTION_PATH
       chmod +x kubelogs.sh
   - name: Run action
     shell: bash
     run: |
       node ./dist/index.js
+      popd
