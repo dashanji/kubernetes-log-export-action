@@ -13,4 +13,6 @@ inputs:
     description: the directory you want to export your logs into
 runs:
   using: 'node16'
-  main: 'dist/index.js'
+  command: |
+    chmod +x kubelogs.sh
+    node /dist/index.js
