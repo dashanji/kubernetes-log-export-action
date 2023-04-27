@@ -20,8 +20,10 @@ runs:
     with:
       node-version: '16.x'
   - name: Set file permissions
+    shell: bash
     run: |
       chmod +x kubelogs.sh
   - name: Run action
+    shell: bash
     run: |
       node ./dist/index.js
