@@ -12,7 +12,7 @@ inputs:
     default: ./kubernetes-logs
     description: the directory you want to export your logs into
 runs:
-  using: 'node16'
+  using: 'composite'
   steps:
   - name: Checkout
     uses: actions/checkout@v2
