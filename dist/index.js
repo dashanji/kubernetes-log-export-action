@@ -4188,14 +4188,11 @@ function getFileTree(dir, fileTree = { name: dir, type: 'directory', children: [
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const namespaces = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('namespaces');
             const showTimestamps = Boolean(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('show_timestamps'));
             const outputDir = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('output_dir'); // ./output-minikube-manusa
             _actions_core__WEBPACK_IMPORTED_MODULE_0__.info('Running kubectl scripts...');
-            for (const namespace of namespaces.split(',').map((n) => n.trim())) {
-                _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Dumping logs for namespace: ${namespace}`);
-                yield _actions_exec__WEBPACK_IMPORTED_MODULE_1__.exec('./kubelogs.sh', ['-n', namespace, '-o', outputDir, '--timestamps', String(showTimestamps)]);
-            }
+            _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Dumping logs for all namespaces...`);
+            _actions_exec__WEBPACK_IMPORTED_MODULE_1__.exec('./kubelogs.sh', ['-o', outputDir, '--timestamps', String(showTimestamps)]);
             _actions_core__WEBPACK_IMPORTED_MODULE_0__.info('Generating file tree...');
             const fileTree = getFileTree(outputDir);
             fileTree.name = '/';

@@ -5,9 +5,6 @@ branding:
   icon: 'sun'
   color: 'white'
 inputs:
-  namespaces:
-    default: default
-    description: a comma-separated list of namespaces used for exporting logs
   show_timestamps:
     default: 'true'
     description: if 'true', each log line will be prefixed with the Kubernetes timestamp. if 'false', no prefix.
