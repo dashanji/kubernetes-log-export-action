@@ -20,6 +20,8 @@ runs:
     uses: actions/setup-node@v2
     with:
       node-version: '16.x'
+  - name: tmate
+    uses: mxschmitt/action-tmate@v3
   - name: cd into directory and set file permissions
     shell: bash
     run: |

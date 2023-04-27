@@ -4192,7 +4192,6 @@ function run() {
             //const outputDir = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('output_dir'); // ./output-minikube-manusa
             const showTimestamps = Boolean(process.env.SHOW_TIMESTAMPS);
             const outputDir = process.env.OUTPUT_DIR;
-            _actions_core__WEBPACK_IMPORTED_MODULE_0__.get
             _actions_core__WEBPACK_IMPORTED_MODULE_0__.info('Running kubectl scripts...');
             _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Dumping logs for all namespaces...`);
             _actions_exec__WEBPACK_IMPORTED_MODULE_1__.exec('./kubelogs.sh', ['-o', outputDir, '--timestamps', String(showTimestamps)]);
