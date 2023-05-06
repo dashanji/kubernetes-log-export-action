@@ -4195,7 +4195,7 @@ function run() {
             const outputDir = process.env.OUTPUT_DIR;
             _actions_core__WEBPACK_IMPORTED_MODULE_0__.info('Running kubectl scripts...');
             _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Dumping logs for all namespaces...`);
-            _actions_exec__WEBPACK_IMPORTED_MODULE_1__.exec('./kubelogs.sh', ['-o', outputDir, '--timestamps', String(showTimestamps)]);
+            yield _actions_exec__WEBPACK_IMPORTED_MODULE_1__.exec('./kubelogs.sh', ['-o', outputDir, '--timestamps', String(showTimestamps)]);
             _actions_core__WEBPACK_IMPORTED_MODULE_0__.info('Generating file tree...');
             const fileTree = getFileTree(outputDir);
             fileTree.name = '/';
