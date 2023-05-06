@@ -5,9 +5,6 @@ branding:
   icon: 'sun'
   color: 'white'
 inputs:
-  namespaces:
-    default: default
-    description: a comma-separated list of namespaces used for exporting logs
   show_timestamps:
     default: 'true'
     description: if 'true', each log line will be prefixed with the Kubernetes timestamp. if 'false', no prefix.
@@ -15,5 +12,21 @@ inputs:
     default: ./kubernetes-logs
     description: the directory you want to export your logs into
 runs:
-  using: 'node16'
-  main: 'dist/index.js'
+  using: 'composite'
+  steps:
+  - name: Set up Node.js
+    uses: actions/setup-node@v2
+    with:
+      node-version: '16.x'
+  - name: cd into directory and set file permissions
+    shell: bash
+    run: |
+      pushd $GITHUB_ACTION_PATH
+      chmod +x kubelogs.sh
+      popd
+  - name: Run action
+    shell: bash
+    run: |
+      pushd $GITHUB_ACTION_PATH
+      node ./dist/index.js
+      popd
