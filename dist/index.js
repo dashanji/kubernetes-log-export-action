@@ -4171,20 +4171,19 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
 
 
 
-const path = require('path');
-
-function getFileTree(dir, fileTree = { name: path.basename(dir), type: 'directory', children: [] }) {
-  const files = fs__WEBPACK_IMPORTED_MODULE_2__.readdirSync(dir);
-  for (const file of files) {
-    const filePath = path.join(dir, file);
-    const stat = fs__WEBPACK_IMPORTED_MODULE_2__.statSync(filePath);
-    if (stat.isFile()) {
-      fileTree.children.push({ name: file, type: 'file' });
-    } else if (stat.isDirectory()) {
-      fileTree.children.push(getFileTree(filePath, { name: file, type: 'directory', children: [] }));
+function getFileTree(dir, fileTree = { name: dir, type: 'directory', children: [] }) {
+    const files = fs__WEBPACK_IMPORTED_MODULE_2__.readdirSync(dir);
+    for (const file of files) {
+        const filePath = `${dir}/${file}`;
+        const stat = fs__WEBPACK_IMPORTED_MODULE_2__.statSync(filePath);
+        if (stat.isFile()) {
+            fileTree.children.push({ name: file, type: 'file' });
+        }
+        else if (stat.isDirectory()) {
+            fileTree.children.push(getFileTree(filePath, { name: file, type: 'directory', children: [] }));
+        }
     }
-  }
-  return fileTree;
+    return fileTree;
 }
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
