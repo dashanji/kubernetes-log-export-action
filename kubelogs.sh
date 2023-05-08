@@ -12,14 +12,16 @@ default_tail="${KUBELOGS_TAIL:--1}"
 default_timestamps="${KUBELOGS_TIMESTAMPS:-false}"
 
 NAMESPACE="${default_namespace}"
+FILTER_NAMESPACES=""
 NAMESPACE_LIST=""
 OUTPUT_DIR="${default_output_dir}"
 TAIL="${default_tail}"
 TIMESTAMPS="${default_timestamps}"
 
-USAGE="kubelogs [-h] [-o] [-v] -- dump all kubernetes container logs to local files
+USAGE="kubelogs [-h] [-n] [-o] [-v] -- dump all kubernetes container logs to local files
 kubelogs options:
     -h, --help           Show this help text
+    -n, --namespace      Specify serveral namespaces to skip the logs
     -o, --output-dir     Specify a output directory to skip the interactive selection
     -v, --version        Prints the kubelogs version
 
@@ -32,13 +34,6 @@ inherited from kubelogs:
 function get_namespace_list() {
   NAMESPACE_LIST=(`kubectl get namespaces --output=jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | awk 'NF {print $1; print $1}'`)
   if [[ -z ${NAMESPACE_LIST[@]} ]]; then echo "No namespaces found for context $(kubectl config current-context)!" >&2; exit 1; fi
-}
-
-# Get namespace list from current context
-function select_namespace() {
-  NAMESPACE_LIST=(`kubectl get namespaces --output=jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' | awk 'NF {print $1; print $1}'`)
-  if [[ -z ${NAMESPACE_LIST[@]} ]]; then echo "No namespaces found for context $(kubectl config current-context)!" >&2; exit 1; fi
-  NAMESPACE=$(whiptail --noitem --title "Select a namespace" --menu "choose" 16 78 10 "${NAMESPACE_LIST[@]}" 3>&1 1>&2 2>&3)
 }
 
 # Get pod list from selected namespace
@@ -98,6 +93,9 @@ if [ "$#" -ne 0 ]; then
           echo "$VERSION"
           exit 0
           ;;
+    -n|--namespace)
+          FILTER_NAMESPACES="$2"
+          ;;
     -o|--output-dir)
           if [ -z "$2" ]; then
             echo "ERROR: $1 cannot be empty" >&2
@@ -144,12 +142,18 @@ if [ "$#" -ne 0 ]; then
   done
 fi
 
+# Split FILTER_NAMESPACES into array
+IFS=',' read -ra FILTERED_NAMESPACES <<< "$FILTER_NAMESPACES"
+
 # Call get_namespace_list function
 get_namespace_list
 
 # Call select_pod function for each namespace
 for NAMESPACE in "${NAMESPACE_LIST[@]}"
 do
+  # Skip if namespace is in FILTERED_NAMESPACES array
+  if [[ " ${FILTERED_NAMESPACES[@]} " =~ " ${NAMESPACE} " ]]; then continue; fi
+
   select_pods
 
   # Call output_dir functions
