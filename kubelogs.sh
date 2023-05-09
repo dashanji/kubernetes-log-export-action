@@ -12,7 +12,7 @@ default_tail="${KUBELOGS_TAIL:--1}"
 default_timestamps="${KUBELOGS_TIMESTAMPS:-false}"
 
 NAMESPACE="${default_namespace}"
-FILTER_NAMESPACES=""
+NAMESPACES=""
 NAMESPACE_LIST=""
 OUTPUT_DIR="${default_output_dir}"
 TAIL="${default_tail}"
@@ -21,7 +21,7 @@ TIMESTAMPS="${default_timestamps}"
 USAGE="kubelogs [-h] [-n] [-o] [-v] -- dump all kubernetes container logs to local files
 kubelogs options:
     -h, --help           Show this help text
-    -n, --namespace      Specify serveral namespaces to skip the logs
+    -n, --namespace      Specify serveral namespaces with wildcard (e.g. 'kube-*')
     -o, --output-dir     Specify a output directory to skip the interactive selection
     -v, --version        Prints the kubelogs version
 
@@ -94,7 +94,7 @@ if [ "$#" -ne 0 ]; then
           exit 0
           ;;
     -n|--namespace)
-          FILTER_NAMESPACES="$2"
+          NAMESPACES="$2"
           ;;
     -o|--output-dir)
           if [ -z "$2" ]; then
@@ -142,8 +142,8 @@ if [ "$#" -ne 0 ]; then
   done
 fi
 
-# Split FILTER_NAMESPACES into array
-IFS=',' read -ra FILTERED_NAMESPACES <<< "$FILTER_NAMESPACES"
+# Split NAMESPACES into array
+IFS=',' read -ra INCLUDED_NAMESPACES <<< "$NAMESPACES"
 
 # Call get_namespace_list function
 get_namespace_list
@@ -151,14 +151,16 @@ get_namespace_list
 # Call select_pod function for each namespace
 for NAMESPACE in "${NAMESPACE_LIST[@]}"
 do
-  # Skip if namespace is in FILTERED_NAMESPACES array
-  if [[ " ${FILTERED_NAMESPACES[@]} " =~ " ${NAMESPACE} " ]]; then continue; fi
+  for INCLUDED_NAMESPACE in "${INCLUDED_NAMESPACES[@]}"
+  do
+    if [[ "$NAMESPACE" == ${INCLUDED_NAMESPACE} ]]; then
+      select_pods
 
-  select_pods
+      # Call output_dir functions
+      if [[ -z "$OUTPUT_DIR" ]]; then select_output_dir; fi
 
-  # Call output_dir functions
-  if [[ -z "$OUTPUT_DIR" ]]; then select_output_dir; fi
-
-  # Call get_container_logs function
-  get_container_logs
+      # Call get_container_logs function
+      get_container_logs
+    fi
+  done
 done
