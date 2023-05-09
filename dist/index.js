@@ -4204,7 +4204,7 @@ function run() {
         try {
             //const showTimestamps = Boolean(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('show_timestamps'));
             //const outputDir = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('output_dir'); // ./output-minikube-manusa
-            const namespaces = process.env.EXCLUDE_NAMESPACES;
+            const namespaces = process.env.NAMESPACES;
             const showTimestamps = Boolean(process.env.SHOW_TIMESTAMPS);
             const outputDir = process.env.OUTPUT_DIR;
             _actions_core__WEBPACK_IMPORTED_MODULE_0__.info('Running kubectl scripts...');
