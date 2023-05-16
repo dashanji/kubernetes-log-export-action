@@ -18,15 +18,10 @@ runs:
     uses: actions/setup-node@v2
     with:
       node-version: '16.x'
-  - name: cd into directory and set file permissions
-    shell: bash
-    run: |
-      pushd $GITHUB_ACTION_PATH
-      chmod +x kubelogs.sh
-      popd
   - name: Run action
     shell: bash
     run: |
       pushd $GITHUB_ACTION_PATH
-      node ./dist/index.js
+      chmod +x kubelogs.sh
+      bash $MODE.sh
       popd
