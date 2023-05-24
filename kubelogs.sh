@@ -61,6 +61,12 @@ function select_output_dir() {
   done
 }
 
+# get events from NAMESPACE
+function get_events() {
+  mkdir -p "$OUTPUT_DIR/${NAMESPACE}"
+  kubectl get events --namespace=${NAMESPACE} > "$OUTPUT_DIR/${NAMESPACE}/events.log"
+}
+
 # Get container logs from NAMESPACE/PODS
 function get_container_logs() {
 
@@ -159,6 +165,8 @@ do
       # Call output_dir functions
       if [[ -z "$OUTPUT_DIR" ]]; then select_output_dir; fi
 
+      # Call get_events function
+      get_events
       # Call get_container_logs function
       get_container_logs
     fi

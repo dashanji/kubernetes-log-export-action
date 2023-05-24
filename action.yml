@@ -23,5 +23,10 @@ runs:
     run: |
       pushd $GITHUB_ACTION_PATH
       chmod +x kubelogs.sh
-      bash $MODE.sh
+      if $MODE == "start"; then
+        nohup bash $MODE.sh >/dev/null 2>&1 &
+        echo $! > kubelogs.pid
+      elif $MODE == "stop"; then
+        kill -9 $(cat kubelogs.pid)
+      fi
       popd
