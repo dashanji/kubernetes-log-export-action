@@ -60,6 +60,11 @@ function select_output_dir() {
     OUTPUT_DIR=$(whiptail --inputbox "Enter a local directory for output file(s):" 8 78 --title "Directory" 3>&1 1>&2 2>&3)
   done
 }
+# get pod's statue from NAMESPACE
+function get_pod_status() {
+  mkdir -p "$OUTPUT_DIR/${NAMESPACE}"
+  kubectl get pods --namespace=${NAMESPACE} > "$OUTPUT_DIR/${NAMESPACE}/pod_status.log"
+}
 
 # get events from NAMESPACE
 function get_events() {
@@ -165,6 +170,8 @@ do
       # Call output_dir functions
       if [[ -z "$OUTPUT_DIR" ]]; then select_output_dir; fi
 
+      # Call get_pod_status function
+      get_pod_status
       # Call get_events function
       get_events
       # Call get_container_logs function
