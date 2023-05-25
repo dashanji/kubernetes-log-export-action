@@ -24,6 +24,13 @@ runs:
     uses: actions/setup-node@v2
     with:
       node-version: '16.x'
+  - name: test1
+    shell: bash
+    run: |
+      echo ${{ inputs.namespaces }}
+      echo ${{ inputs.output_dir }}
+      echo ${{ inputs.show_timestamps }}
+      echo ${{ inputs.mode }}
   - name: test
     uses: mxschmitt/action-tmate@v3
   - name: Run action
