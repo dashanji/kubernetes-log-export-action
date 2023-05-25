@@ -18,6 +18,10 @@ runs:
     uses: actions/setup-node@v2
     with:
       node-version: '16.x'
+  - name: test
+    shell: bash
+    run: |
+      echo "test here"
   - name: Run action
     shell: bash
     run: |
