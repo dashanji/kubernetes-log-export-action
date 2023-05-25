@@ -27,6 +27,6 @@ runs:
         nohup bash $MODE.sh >/dev/null 2>&1 &
         echo $! > kubelogs.pid
       elif $MODE == "stop"; then
-        kill -9 $(cat kubelogs.pid)
+        bash $MODE.sh
       fi
       popd
