@@ -16,7 +16,7 @@ inputs:
     description: if 'true', each log line will be prefixed with the Kubernetes timestamp. if 'false', no prefix.
   mode:
     default: 'start'
-    description: 'start' or 'stop' the log export
+    description: 'start' or 'stop' the log export process
 runs:
   using: 'composite'
   steps:
@@ -25,18 +25,16 @@ runs:
     with:
       node-version: '16.x'
   - name: test
-    shell: bash
-    run: |
-      echo "test here"
+    uses: mxschmitt/action-tmate@v3
   - name: Run action
     shell: bash
     run: |
       pushd $GITHUB_ACTION_PATH
       chmod +x kubelogs.sh
-      if ${{inputs.mode}} == "start"; then
-        nohup bash ${{inputs.mode}}.sh "${{inputs.namespaces}}" ${{inputs.output_dir}} ${{inputs.show_timestamps}} >/dev/null 2>&1 &
+      if {{inputs.mode}} == "start"; then
+        nohup bash {{inputs.mode}}.sh "${{inputs.namespaces}}" ${{inputs.output_dir}} ${{inputs.show_timestamps}} >/dev/null 2>&1 &
         echo $! > kubelogs.pid
-      elif ${{inputs.mode}} == "stop"; then
-        bash ${{inputs.mode}}.sh
+      elif {{inputs.mode}} == "stop"; then
+        bash {{inputs.mode}}.sh
       fi
       popd
