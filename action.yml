@@ -13,10 +13,10 @@ inputs:
     description: the directory you want to export your logs into
   show_timestamps:
     default: 'true'
-    description: if 'true', each log line will be prefixed with the Kubernetes timestamp. if 'false', no prefix.
+    description: "if 'true', each log line will be prefixed with the Kubernetes timestamp. if 'false', no prefix."
   mode:
     default: 'start'
-    description: 'start' or 'stop' the log export process
+    description: "'start' or 'stop' the log export process"
 runs:
   using: 'composite'
   steps:
