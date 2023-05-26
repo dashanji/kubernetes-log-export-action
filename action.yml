@@ -11,12 +11,12 @@ inputs:
   output_dir:
     default: ./logs
     description: the directory you want to export your logs into
-  #show_timestamps:
-  #  default: 'true'
-  #  description: "if 'true', each log line will be prefixed with the Kubernetes timestamp. if 'false', no prefix."
-  #mode:
-  #  default: 'start'
-  #  description: "'start' or 'stop' the log export process"
+  show_timestamps:
+    default: 'true'
+    description: "if 'true', each log line will be prefixed with the Kubernetes timestamp. if 'false', no prefix."
+  mode:
+    default: 'start'
+    description: "'start' or 'stop' the log export process"
 runs:
   using: 'composite'
   steps:
@@ -29,10 +29,10 @@ runs:
     run: |
       pushd $GITHUB_ACTION_PATH
       chmod +x kubelogs.sh
-      if "$MODE" == "start"; then
-        nohup bash $MODE.sh "$NAMESPACES" $OUTPUT_DIR $SHOW_TIMESTAMPS >/dev/null 2>&1 &
+      if "${{ inputs.mode }}" == "start"; then
+        nohup bash ${{ inputs.mode }}.sh "${{ inputs.namespaces }}" ${{ inputs.output_dir }} ${{ inputs.show_timestamps }} >/dev/null 2>&1 &
         echo $! > kubelogs.pid
-      elif "$MODE" == "stop"; then
-        bash $MODE.sh
+      elif "${{ inputs.mode }}" == "stop"; then
+        bash ${{ inputs.mode }}.sh
       fi
       popd
