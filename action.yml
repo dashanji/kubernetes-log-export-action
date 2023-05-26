@@ -29,10 +29,10 @@ runs:
     run: |
       pushd $GITHUB_ACTION_PATH
       chmod +x kubelogs.sh
-      if ${{ inputs.mode }} == "start"; then
+      if "${{ inputs.mode }}" == "start"; then
         nohup bash ${{ inputs.mode }}.sh "${{ inputs.namespaces }}" ${{ inputs.output_dir }} ${{ inputs.show_timestamps }} >/dev/null 2>&1 &
         echo $! > kubelogs.pid
-      elif ${{ inputs.mode }} == "stop"; then
+      elif "${{ inputs.mode }}" == "stop"; then
         bash ${{ inputs.mode }}.sh
       fi
       popd
