@@ -60,7 +60,11 @@ function select_output_dir() {
     OUTPUT_DIR=$(whiptail --inputbox "Enter a local directory for output file(s):" 8 78 --title "Directory" 3>&1 1>&2 2>&3)
   done
 }
-# get pod's statue from NAMESPACE
+function get_all_pod_status() {
+  mkdir -p "$OUTPUT_DIR"
+  kubectl get pods -A > "$OUTPUT_DIR/all_pods_status.log"
+}
+# get pod's status from NAMESPACE
 function get_pod_status() {
   mkdir -p "$OUTPUT_DIR/${NAMESPACE}"
   kubectl get pods --namespace=${NAMESPACE} > "$OUTPUT_DIR/${NAMESPACE}/pod_status.log"
@@ -83,10 +87,10 @@ function get_container_logs() {
       CONTAINERSTATUS=$(kubectl get pods --namespace=${NAMESPACE} ${pod} --output=jsonpath='{.status.containerStatuses[*].ready}')
       echo "Getting ${pod} describe info..."
       mkdir -p "$OUTPUT_DIR/${NAMESPACE}/${pod}"
-      kubectl describe pods --namespace=${NAMESPACE} ${pod} > "$OUTPUT_DIR/${NAMESPACE}/${pod}/kubectl_describe.log" || { echo "Error while getting ${pod} describe!" >&2; }
+      kubectl describe pods --namespace=${NAMESPACE} ${pod} > "$OUTPUT_DIR/${NAMESPACE}/${pod}/describe_info_of_${pod}.log" || { echo "Error while getting ${pod} describe!" >&2; }
       echo "Getting ${pod} yaml info..."
       kubectl get pods --namespace=${NAMESPACE} ${pod} -oyaml > "$OUTPUT_DIR/${NAMESPACE}/${pod}/${pod}.yaml" || { echo "Error while getting ${pod} describe!" >&2; }
-      if [[ "$PHASE" == "Running" ]] && [[ "$CONTAINERSTATUS" == "true" ]];
+      if [[ "$PHASE" == "Running" ]];
         then
           CONTAINERS=(`kubectl get pods --namespace=${NAMESPACE} ${pod} --output=jsonpath='{.spec.containers[*].name}'`)
           for container in "${CONTAINERS[@]}"
@@ -100,7 +104,7 @@ function get_container_logs() {
             if [[ "$RESTARTCOUNT" != "0" ]];
               then
                 echo "Getting ${pod}/${container} previous logs..."
-                kubectl logs --tail=${TAIL} --timestamps=${TIMESTAMPS} --namespace=${NAMESPACE} ${pod} --container=${container} --previous > "$OUTPUT_DIR/${NAMESPACE}/${pod}/previous_${container}.log" || { echo "Error while getting ${pod}/${container} logs!" >&2; }
+                kubectl logs --tail=${TAIL} --timestamps=${TIMESTAMPS} --namespace=${NAMESPACE} ${pod} --container=${container} --previous > "$OUTPUT_DIR/${NAMESPACE}/${pod}/previous_log_of_${container}.log" || { echo "Error while getting ${pod}/${container} logs!" >&2; }
             fi
             set -e
           done
@@ -188,6 +192,8 @@ do
       # Call output_dir functions
       if [[ -z "$OUTPUT_DIR" ]]; then select_output_dir; fi
 
+      # Call get_all_pod_status function
+      get_all_pod_status
       # Call get_pod_status function
       get_pod_status
       # Call get_events function
