@@ -34,5 +34,8 @@ runs:
         echo $! > kubelogs.pid
       elif [[ "$MODE" == "stop" ]]; then
         bash $MODE.sh
+        if [[ "$WITH_STOAT" == "true" ]]; then
+          node ./dist/index.js
+        fi
       fi
       popd

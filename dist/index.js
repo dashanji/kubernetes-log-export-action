@@ -4204,13 +4204,13 @@ function run() {
         try {
             //const showTimestamps = Boolean(_actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('show_timestamps'));
             //const outputDir = _actions_core__WEBPACK_IMPORTED_MODULE_0__.getInput('output_dir'); // ./output-minikube-manusa
-            const namespaces = process.env.NAMESPACES;
-            const showTimestamps = Boolean(process.env.SHOW_TIMESTAMPS);
+            //const namespaces = process.env.NAMESPACES;
+            //const showTimestamps = Boolean(process.env.SHOW_TIMESTAMPS);
             const outputDir = process.env.OUTPUT_DIR;
-            _actions_core__WEBPACK_IMPORTED_MODULE_0__.info('Running kubectl scripts...');
-            _actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Dumping logs for all namespaces...`);
-            yield _actions_exec__WEBPACK_IMPORTED_MODULE_1__.exec('./kubelogs.sh', ['-n', namespaces, '-o', outputDir, '--timestamps', String(showTimestamps)]);
-            _actions_core__WEBPACK_IMPORTED_MODULE_0__.info('Generating file tree...');
+            //_actions_core__WEBPACK_IMPORTED_MODULE_0__.info('Running kubectl scripts...');
+            //_actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Dumping logs for all namespaces...`);
+            //yield _actions_exec__WEBPACK_IMPORTED_MODULE_1__.exec('./kubelogs.sh', ['-n', namespaces, '-o', outputDir, '--timestamps', String(showTimestamps)]);
+            //_actions_core__WEBPACK_IMPORTED_MODULE_0__.info('Generating file tree...');
             const fileTree = getFileTree(outputDir);
             fileTree.name = '/';
             fs__WEBPACK_IMPORTED_MODULE_2__.writeFileSync(path__WEBPACK_IMPORTED_MODULE_3__.join(outputDir, 'filetree.json'), JSON.stringify(fileTree));
