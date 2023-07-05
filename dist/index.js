@@ -4210,7 +4210,7 @@ function run() {
             //_actions_core__WEBPACK_IMPORTED_MODULE_0__.info('Running kubectl scripts...');
             //_actions_core__WEBPACK_IMPORTED_MODULE_0__.info(`Dumping logs for all namespaces...`);
             //yield _actions_exec__WEBPACK_IMPORTED_MODULE_1__.exec('./kubelogs.sh', ['-n', namespaces, '-o', outputDir, '--timestamps', String(showTimestamps)]);
-            //_actions_core__WEBPACK_IMPORTED_MODULE_0__.info('Generating file tree...');
+            _actions_core__WEBPACK_IMPORTED_MODULE_0__.info('Generating file tree...');
             const fileTree = getFileTree(outputDir);
             fileTree.name = '/';
             fs__WEBPACK_IMPORTED_MODULE_2__.writeFileSync(path__WEBPACK_IMPORTED_MODULE_3__.join(outputDir, 'filetree.json'), JSON.stringify(fileTree));
