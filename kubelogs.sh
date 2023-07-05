@@ -76,17 +76,33 @@ function get_events() {
 function get_container_logs() {
 
     #TIMESTAMP="$(date +"%Y%m%d_%H%M%S")"
+    # only get the logs from the running pods
     for pod in "${PODS[@]}"
     do
-      CONTAINERS=(`kubectl get pods --namespace=${NAMESPACE} ${pod} --output=jsonpath='{.spec.containers[*].name}'`)
-      for container in "${CONTAINERS[@]}"
-      do
-        set +e
-        echo "Getting ${pod}/${container} logs..."
-        mkdir -p "$OUTPUT_DIR/${NAMESPACE}/${pod}"
-        kubectl logs --tail=${TAIL} --timestamps=${TIMESTAMPS} --namespace=${NAMESPACE} ${pod} --container=${container} > "$OUTPUT_DIR/${NAMESPACE}/${pod}/${container}.log" || { echo "Error while getting ${pod}/${container} logs!" >&2; }
-        set -e
-      done
+      PHASE=$(kubectl get pods --namespace=${NAMESPACE} ${pod} --output=jsonpath='{.status.phase}')
+      if [[ "$PHASE" != "Running" ]];
+        then 
+          echo "Getting ${pod} describe info..."
+          mkdir -p "$OUTPUT_DIR/${NAMESPACE}/${pod}"
+          kubectl describe pods --namespace=${NAMESPACE} ${pod} > "$OUTPUT_DIR/${NAMESPACE}/${pod}/kubectl_describe.log" || { echo "Error while getting ${pod} describe!" >&2; }
+      else
+        CONTAINERS=(`kubectl get pods --namespace=${NAMESPACE} ${pod} --output=jsonpath='{.spec.containers[*].name}'`)
+        for container in "${CONTAINERS[@]}"
+        do
+          set +e
+          echo "Getting ${pod}/${container} logs..."
+          mkdir -p "$OUTPUT_DIR/${NAMESPACE}/${pod}"
+          kubectl logs --tail=${TAIL} --timestamps=${TIMESTAMPS} --namespace=${NAMESPACE} ${pod} --container=${container} > "$OUTPUT_DIR/${NAMESPACE}/${pod}/${container}.log" || { echo "Error while getting ${pod}/${container} logs!" >&2; }
+          # add the previous logs if a pod is restarted
+          RESTARTCOUNT=$(kubectl get pods --namespace=${NAMESPACE} ${pod} --output=jsonpath='{.status.containerStatuses[?(@.name == "'${container}'")].restartCount}')
+          if [[ "$RESTARTCOUNT" != "0" ]];
+            then
+              echo "Getting ${pod}/${container} previous logs..."
+              kubectl logs --tail=${TAIL} --timestamps=${TIMESTAMPS} --namespace=${NAMESPACE} ${pod} --container=${container} --previous > "$OUTPUT_DIR/${NAMESPACE}/${pod}/previous_${container}.log" || { echo "Error while getting ${pod}/${container} logs!" >&2; }
+          fi
+          set -e
+        done
+      fi
     done
 }
 
