@@ -17,6 +17,8 @@ NAMESPACE_LIST=""
 OUTPUT_DIR="${default_output_dir}"
 TAIL="${default_tail}"
 TIMESTAMPS="${default_timestamps}"
+RESOURCES=""
+RESOURCES_LIST=""
 
 USAGE="kubelogs [-h] [-n] [-o] [-v] -- dump all kubernetes container logs to local files
 kubelogs options:
@@ -29,6 +31,18 @@ inherited from kubelogs:
     --tail               Lines of recent log file to dump (default: -1, all lines)
     --timestamps         Include timestamps on each line in the log output (default: false)
 "
+
+# get kubernetes resources yaml
+function get_kubernetes_resources() {
+  # split RESOURCES into array with comma as delimiter
+  RESOURCES_LIST=(`echo ${RESOURCES} | tr ',' ' '`)
+  for RESOURCE in "${RESOURCES_LIST[@]}"
+  do
+    echo "Getting ${NAMESPACE}/${RESOURCE} yaml info..."
+    mkdir -p "$OUTPUT_DIR/${NAMESPACE}"
+    kubectl get ${RESOURCE} --namespace=${NAMESPACE} -oyaml > "$OUTPUT_DIR/${NAMESPACE}/${RESOURCE}.yaml" || { echo "Error while getting ${RESOURCE} yaml!" >&2; }
+  done
+}
 
 # Get namespace list from current context
 function get_namespace_list() {
@@ -62,7 +76,7 @@ function select_output_dir() {
 }
 function get_all_pod_status() {
   mkdir -p "$OUTPUT_DIR"
-  kubectl get pods -A > "$OUTPUT_DIR/all_pods_status.log"
+  kubectl get pods -A -owide > "$OUTPUT_DIR/all_pods_status.log"
 }
 # get pod's status from NAMESPACE
 function get_pod_status() {
@@ -129,6 +143,9 @@ if [ "$#" -ne 0 ]; then
     -n|--namespace)
           NAMESPACES="$2"
           ;;
+    -r|--resources)
+          RESOURCES="$2"
+          ;;
     -o|--output-dir)
           if [ -z "$2" ]; then
             echo "ERROR: $1 cannot be empty" >&2
@@ -194,6 +211,8 @@ do
 
       # Call get_all_pod_status function
       get_all_pod_status
+      # Call get_kubernetes_resources function
+      get_kubernetes_resources
       # Call get_pod_status function
       get_pod_status
       # Call get_events function
